@@ -1,9 +1,16 @@
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 
-export const cache = new LRU<string, any>({
+type CacheVal = {}; // schließt null/undefined aus, primitives sind erlaubt
+
+export const cache = new LRUCache<string, CacheVal>({
   max: 500,
-  ttl: 1000 * 60 * 15 // 15 minutes default
+  ttl: 1000 * 60 * 15,
 });
 
-export const cacheGet = <T>(key: string) => cache.get(key) as T | undefined;
-export const cacheSet = (key: string, value: any, ttlMs?: number) => cache.set(key, value, { ttl: ttlMs });
+export function cacheGet<T extends CacheVal>(key: string) {
+  return cache.get(key) as T | undefined;
+}
+
+export function cacheSet<T extends CacheVal>(key: string, value: T, ttlMs?: number) {
+  cache.set(key, value, { ttl: ttlMs });
+}
