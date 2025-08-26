@@ -1,18 +1,16 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: { 
+  eslint: { ignoreDuringBuilds: true },
+  images: {
     unoptimized: true,
     remotePatterns: [
-      { protocol: 'https', hostname: '**.bstatic.com' }, // Booking CDN
-      { protocol: 'https', hostname: '**.booking.com' }
-    ]
+      { protocol: 'https', hostname: '**.bstatic.com' },
+      { protocol: 'https', hostname: '**.booking.com' },
+    ],
   },
-  experimental: { typedRoutes: true }
+  typedRoutes: true,
 };
 
 module.exports = nextConfig;

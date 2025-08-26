@@ -1,3 +1,5 @@
+// app/api/locations/route.ts
+
 import { NextRequest } from 'next/server';
 import { fetchCitySuggestions } from '@/lib/booking';
 

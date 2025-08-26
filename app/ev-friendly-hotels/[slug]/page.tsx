@@ -1,10 +1,9 @@
 // Static content that prerenders popular interstates & metros
-// Example slugs: 'i-95', 'los-angeles', 'bay-area', 'i-5', 'i-10', 'i-80'
-import type { Metadata, PageProps } from 'next/types';
+// app/ev-friendly-hotels/[slug]page.tsx
 
-import SearchBar from '@/components/SearchBar';
+import type { Metadata } from 'next';
+import SearchBarSection from './SearchBarSection';
 
-type Props = PageProps<'/ev-friendly-hotels/[slug]'>;
 
 const PRESETS: Record<string, { title: string; intro: string; cityId?: number }> = {
   'i-95': { 
@@ -35,14 +34,18 @@ const PRESETS: Record<string, { title: string; intro: string; cityId?: number }>
 
 
 export async function generateMetadata(
-  { params }: Props
+  props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = await props.params;
   const p = PRESETS[slug] || { title: 'EV-freundliche Hotels', intro: '' };
   return {
     title: `${p.title} | Sleep-&-Charge`,
     description: p.intro,
-    openGraph: { title: `${p.title} | Sleep-&-Charge`, description: p.intro, type: 'website' },
+    openGraph: {
+      title: `${p.title} | Sleep-&-Charge`,
+      description: p.intro,
+      type: 'website',
+    },
   };
 }
 
@@ -66,7 +69,9 @@ export default async function Page(
       <section>
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">{p.title}</h1>
         <p className="text-lg text-slate-600 mb-8 max-w-3xl">{p.intro}</p>
-        <SearchBar onSearch={async () => {}} />
+
+        {/* Statt <SearchBar onSearch={...} /> jetzt der Client-Wrapper: */}
+        <SearchBarSection />
       </section>
       
       <section className="bg-white rounded-2xl p-6 md:p-8 shadow-soft border border-slate-100">
@@ -92,4 +97,9 @@ export default async function Page(
       </section>
     </div>
   );
+}
+
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return Object.keys(PRESETS).map((slug) => ({ slug }));
 }
