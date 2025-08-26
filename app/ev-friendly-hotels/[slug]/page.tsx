@@ -1,9 +1,12 @@
 // Static content that prerenders popular interstates & metros
 // Example slugs: 'i-95', 'los-angeles', 'bay-area', 'i-5', 'i-10', 'i-80'
-import type { Metadata } from 'next';
+import type { Metadata, PageProps } from 'next/types';
+
 import SearchBar from '@/components/SearchBar';
 
-const PRESETS: Record<string,{ title:string; intro:string; cityId?:number }> = {
+type Props = PageProps<'/ev-friendly-hotels/[slug]'>;
+
+const PRESETS: Record<string, { title: string; intro: string; cityId?: number }> = {
   'i-95': { 
     title: 'EV‑friendly Hotels along I‑95', 
     intro: 'The best accommodations with fast charging stations along the I‑95 corridor from Maine to Florida.' 
@@ -30,22 +33,25 @@ const PRESETS: Record<string,{ title:string; intro:string; cityId?:number }> = {
   }
 };
 
-export async function generateMetadata({ params }:{ params:{ slug:string } }): Promise<Metadata> {
-  const p = PRESETS[params.slug] || { title: 'EV‑freundliche Hotels', intro: '' };
-  return { 
-    title: `${p.title} | Sleep‑&‑Charge`, 
+
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+  const { slug } = await params;
+  const p = PRESETS[slug] || { title: 'EV-freundliche Hotels', intro: '' };
+  return {
+    title: `${p.title} | Sleep-&-Charge`,
     description: p.intro,
-    openGraph: {
-      title: `${p.title} | Sleep‑&‑Charge`,
-      description: p.intro,
-      type: 'website',
-    }
+    openGraph: { title: `${p.title} | Sleep-&-Charge`, description: p.intro, type: 'website' },
   };
 }
 
-export default function Page({ params }:{ params:{ slug:string } }){
-  const p = PRESETS[params.slug];
-  
+export default async function Page(
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const p = PRESETS[slug];
+
   if (!p) {
     return (
       <div className="text-center py-12">
